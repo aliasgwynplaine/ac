@@ -36,6 +36,46 @@ void ac_destroy(struct ac_t * ac) {
     free(ac);
 }
 
+void ac_print_(struct ac_node_t * n, struct q_t * q) {
+/**
+ * shamelessly plundered from 
+ * https://hbfs.wordpress.com/2016/12/06/pretty-printing-a-tree-in-a-terminal/
+ * :3
+ */
+
+    if (n) {
+        printf("[%c:%ld]\n", n->k, n->p);
+        
+        for (int i = 0; i < q->h; i++) 
+            if (q->b[i]) printf(" \u2502");
+            else printf("   ");
+
+        printf(" \u251c");
+        q_push(q, true);
+        ac_print_(n->f[0], q);
+        q_pop(q);
+
+        for (int i = 0; i < q->h; i++) 
+            if (q->b[i]) printf(" \u2502");
+            else printf("   ");
+
+        printf(" \u2514");
+        q_push(q, false);
+        ac_print_(n->f[1], q);        
+        q_pop(q);
+    } else {
+        printf("\u259e\n");
+    }
+
+}
+
+
+void ac_print(struct ac_node_t * root) {
+    struct q_t * q = q_init(64);
+    ac_print_(root, q);
+    q_destroy(q);
+}
+
 
 int ac_check_pri(struct ac_node_t * acroot) {
     struct ac_node_t * fd, * fg;

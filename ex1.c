@@ -33,6 +33,7 @@ int main(int argc, char * argv[]){
     node->f[1] = nodemaker('A', 5);
     
     printf("%d\n", ac_check_pri(ac->root));
+    ac_print(ac->root);
     ac_destroy(ac);
 
     return 0;
