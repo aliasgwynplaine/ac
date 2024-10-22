@@ -9,6 +9,8 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "outils.h"
 
 /* lol */
 #define G 1
@@ -34,7 +36,7 @@ struct ac_node_t * ac_search(struct ac_t * ac, char k);
 void ac_node_destroy(struct ac_node_t * node);
 void ac_destroy(struct ac_t * ac);
 
-void ac_print(struct ac_t * ac);
+void ac_print(struct ac_node_t * n);
 int  ac_check_pri(struct ac_node_t * acroot);
 int  ac_empty(struct ac_t * ac);
 
