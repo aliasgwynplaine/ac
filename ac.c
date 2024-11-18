@@ -26,11 +26,12 @@ void ac_node_rot(struct ac_node_t * n) {
 /**
  * returns 
  *          1: meme k
- *          0: 
+ *          0: reussi
  */
 
 int ac_insert(struct ac_t * ac, char k, size_t p) {
     assert(ac != NULL);
+    //printf("insert %c %li\n", k, p);
 
     int h = 0; /* stack height */
     struct ac_node_t * s[1024]; /* stack. use thre->h */
@@ -51,7 +52,9 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
 
         s[h] = ptr;
         d[h] = k < ptr->k;
-        ptr = ptr->f[d[h++]];
+        //printf("[%c:%ld]\n", ptr->k, ptr->p);
+        //printf("d: %i\n", d[h]);
+        ptr  = s[h]->f[d[h++]];
     }
 
     struct ac_node_t * n = ac_node_init();
@@ -62,21 +65,22 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
         s[h-1]->f[d[h-1]] = n;
     } else // here ac is empty
         ac->root = n;
+
     ac->sz++;
 
-    /**
-     * todo: balancing
-     */
-
     while (h > 0 && s[--h]->p > n->p) {
+        if (h == 0) ac->root = n;
+        else s[h-1]->f[d[h-1]] = n;
+        
         if (d[h]) { /* n at left : rot right*/
+            //printf("rotright\n");
             s[h]->f[1] = n->f[0];
             n->f[0]    = s[h];
         } else {   /* n at right : rot left */
-            n->f[0]    = s[h]->f[1];
-            s[h]->f[1] = n;
+            //printf("rotleft\n");
+            s[h]->f[0] = n->f[1];
+            n->f[1]    = s[h];
         }
-
     }
     
     return 0;
