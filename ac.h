@@ -25,13 +25,15 @@ struct ac_node_t {
 
 
 struct ac_t {
-    struct ac_node_t * root;   /* racine */
-    size_t  h;          /* hauteur */ 
-    size_t sz;          /* size: nombre de noeuds */
+    struct ac_node_t * root; /* racine */
+    size_t  h;               /* hauteur */ 
+    size_t sz;               /* size: nombre de noeuds */
 };
 
 struct ac_t * ac_init();
-void ac_insert(struct ac_t * ac, char k, size_t p);
+struct ac_node_t * ac_node_init();
+void ac_node_rot(struct ac_node_t * n);
+int ac_insert(struct ac_t * ac, char k, size_t p);
 struct ac_node_t * ac_search(struct ac_t * ac, char k);
 void ac_node_destroy(struct ac_node_t * node);
 void ac_destroy(struct ac_t * ac);
