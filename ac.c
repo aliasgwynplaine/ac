@@ -92,8 +92,9 @@ int ac_delete(struct ac_t * ac, char k) {
     //printf("delete %c\n", k);
 
     int h = 0; /* stack height */
-    struct ac_node_t * p; /* parent */
-    int                d; /* derniere dir pris*/
+    struct ac_node_t * p; /* grand-parent|grand-fils */
+    int                d; /* derniere dir pris */
+    int               df; /* nxt dir à prendre */
 
     struct ac_node_t * ptr = (struct ac_node_t *)&ac->root; // LOL! xd
     
@@ -104,43 +105,23 @@ int ac_delete(struct ac_t * ac, char k) {
         p   = ptr;
         ptr = ptr->f[d];
     }
-    
-    /*
-    while (ptr->f[0] || ptr->f[1]) {
-        int df;
-        df = ptr->f[0] ? ptr->f[1] ? ptr->f[0] < ptr->f[1] : 0 : 1;
-        p  = p->f[d] = ptr->f[1 - df];  // grand pere paradoxe
-        ptr->f[1 - df] = ptr->f[1 - df]->f[df];
-        p->f[df] = ptr;
-        d = df;
-    }
-    */
+
+    if (ptr->f[0] || ptr->f[1]) df = 0;
 
     while ((ptr->f[0] || ptr->f[1])) {
-        if (ptr->f[0]) {
-            if (ptr->f[1]) {
-                int df = ptr->f[0]->p < ptr->f[1]->p;
-                printf("df: %d\n", df);
-                p->f[d] = ptr->f[1 - df];
-                p  =  ptr->f[1 - df];  // grand pere paradoxe
-                ptr->f[1 - df] = ptr->f[1 - df]->f[df];
-                p->f[df] = ptr;
-                d = df;
-            } else {
-                p = p->f[d] = ptr->f[0]; // grand pere paradoxe
-                ptr->f[0]   = ptr->f[0]->f[1];
-                p->f[1]     = ptr;
-                d = 0;
-            }
-        } else if (ptr->f[1]) {
-            p = p->f[d] = ptr->f[0]; // grand pere paradoxe
-            ptr->f[1]   = ptr->f[1]->f[0];
-            p->f[0]     = ptr;
-            d = 1;
-        }
+        if (ptr->f[0])
+            if (ptr->f[1])
+                df = ptr->f[1]->p < ptr->f[0]->p;
+            else df = 0;
+        else if (ptr->f[1]) df = 1;
+
+        p = p->f[d] = ptr->f[df]; // grand-pere paradox
+        ptr->f[df] = ptr->f[df]->f[1 - df];
+        p->f[1 - df] = ptr;
+        d = 1 - df;
     }
 
-    p->f[1 - d] = NULL; /* the meaning of d is inverted here */
+    p->f[d] = NULL;
     free(ptr);
     ac->sz--;
     

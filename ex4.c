@@ -17,6 +17,8 @@ int main(int argc, char * argv[]){
     printf("------------------\n");
     printf("%d\n", ac_check_pri(ac->root));
     ac_print(ac->root);
+    ac_delete(ac, 'A');
+    ac_delete(ac, 'J');
     ac_delete(ac, 'H');
     ac_print(ac->root);
     ac_destroy(ac);
