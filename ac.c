@@ -87,6 +87,67 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
 }
 
 
+int ac_delete(struct ac_t * ac, char k) {
+    assert(ac != NULL);
+    //printf("delete %c\n", k);
+
+    int h = 0; /* stack height */
+    struct ac_node_t * p; /* parent */
+    int                d; /* derniere dir pris*/
+
+    struct ac_node_t * ptr = (struct ac_node_t *)&ac->root; // LOL! xd
+    
+    while (ptr && k != ptr->k) {
+        d = k < ptr->k;
+        //printf("[%c:%ld]\n", ptr->k, ptr->p);
+        //printf("d: %i\n", d[h]);
+        p   = ptr;
+        ptr = ptr->f[d];
+    }
+    
+    /*
+    while (ptr->f[0] || ptr->f[1]) {
+        int df;
+        df = ptr->f[0] ? ptr->f[1] ? ptr->f[0] < ptr->f[1] : 0 : 1;
+        p  = p->f[d] = ptr->f[1 - df];  // grand pere paradoxe
+        ptr->f[1 - df] = ptr->f[1 - df]->f[df];
+        p->f[df] = ptr;
+        d = df;
+    }
+    */
+
+    while ((ptr->f[0] || ptr->f[1])) {
+        if (ptr->f[0]) {
+            if (ptr->f[1]) {
+                int df = ptr->f[0]->p < ptr->f[1]->p;
+                printf("df: %d\n", df);
+                p->f[d] = ptr->f[1 - df];
+                p  =  ptr->f[1 - df];  // grand pere paradoxe
+                ptr->f[1 - df] = ptr->f[1 - df]->f[df];
+                p->f[df] = ptr;
+                d = df;
+            } else {
+                p = p->f[d] = ptr->f[0]; // grand pere paradoxe
+                ptr->f[0]   = ptr->f[0]->f[1];
+                p->f[1]     = ptr;
+                d = 0;
+            }
+        } else if (ptr->f[1]) {
+            p = p->f[d] = ptr->f[0]; // grand pere paradoxe
+            ptr->f[1]   = ptr->f[1]->f[0];
+            p->f[0]     = ptr;
+            d = 1;
+        }
+    }
+
+    p->f[1 - d] = NULL; /* the meaning of d is inverted here */
+    free(ptr);
+    ac->sz--;
+    
+    return 0;
+}
+
+
 struct ac_node_t * ac_search(struct ac_t * ac, char k) {
     assert(ac->root != NULL);
     struct ac_node_t * n = ac->root;
