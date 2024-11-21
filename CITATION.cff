@@ -1,0 +1,16 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: A simple Cartesian Tree implementation with some tests
+message: For educational purposes only
+type: software
+authors:
+  - given-names: Marco
+    family-names: Leon
+    email: marco.leon@etu.sorbonne-universite.fr
+repository-code: 'https://github.com/aliasgwynplaine/ac'
+abstract: >-
+  A toy implementation of cartesian trees with some tests.
+  For educational purposes only.
+license: GPL-3.0
