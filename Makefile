@@ -4,6 +4,9 @@ OBJ = $(SRCFILES:.c=.o)
 INC_FLAGS = -g -D_DEBUG -Wall
 LDFLAGS = 
 
+happytests.exe: test_ac.o outils.o
+	$(CC) $(@:.exe=.c) $^ -o $@ $(INC_FLAGS) -g $(LDFLAGS)
+
 ex1.exe: ac.o outils.o
 	$(CC) $(@:.exe=.c) $^ -o $@ $(INC_FLAGS) -g $(LDFLAGS)
 
@@ -14,6 +17,9 @@ ex4.exe: ac.o outils.o
 	$(CC) $(@:.exe=.c) $^ -o $@ $(INC_FLAGS) -g $(LDFLAGS)
 
 ac.o: outils.o
+	$(CC) -c $(@:.o=.c) $^ -o $@ $(INC_FLAGS) -g
+
+test_ac.o: outils.o
 	$(CC) -c $(@:.o=.c) $^ -o $@ $(INC_FLAGS) -g
 
 outils.o:

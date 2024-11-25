@@ -44,7 +44,6 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
     //printf("insert %c %li\n", k, p);
 
     int h = 0; /* stack height | profondeur */
-    int h_ = 0;
     struct ac_node_t * s[1024]; /* stack. use thre->h */
     int                d[1024]; /* dirs to reconstrct the path */
     //s[0] = NULL;    
@@ -99,10 +98,9 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
  */
 int ac_delete(struct ac_t * ac, size_t k) {
     assert(ac != NULL);
+    
     if (ac->sz == 0) return 1; /* tree is empty */
-    //printf("delete %c\n", k);
 
-    int h = 0; /* stack height */
     struct ac_node_t * p; /* grand-parent|grand-fils */
     int                d; /* derniere dir pris */
     int               df; /* nxt dir à prendre */

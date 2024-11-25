@@ -9,6 +9,21 @@ int main(int argc, char * argv[]){
         return EXIT_FAILURE;
     }
     size_t nb = atol(argv[1]);
+
+    FILE * fitvdm = fopen("insertion_time_vs_depth_moy.data", "w");
+    
+    if (fitvdm < 0) {
+        perror("open");
+        return errno;
+    }
+
+    FILE * fitvsz = fopen("insertion_time_vs_size.data", "w");
+    
+    if (fitvsz < 0) {
+        perror("open");
+        return errno;
+    }
+
     FILE * fdvs = fopen("bench_depth_vs_size.data", "w");
     
     if (fdvs < 0) {
@@ -22,6 +37,7 @@ int main(int argc, char * argv[]){
         perror("open");
         return errno;
     }
+
     FILE * fdeqr = fopen("bench_equilibre_racine.data", "w");
     
     if (fdeq < 0) {
@@ -44,12 +60,17 @@ int main(int argc, char * argv[]){
         if (ac_check_pri(ac->root) == false) exit(EXIT_FAILURE);
         ac_update(ac);
         //ac_print(ac->root);
+        fprintf(fitvdm, "%f %f\n", ac->d_moy, t);
+        fprintf(fitvsz, "%ld %f\n", ac->sz, t);
+        fprintf(fdvs, "%ld %f\n", ac->sz, ac->d_moy);
         fprintf(fdvs, "%ld %f\n", ac->sz, ac->d_moy);
         fprintf(fdeq, "%ld %f\n", ac->sz, ac->e_var);
-        fprintf(fdeqr, "%ld %c\n", ac->sz, ac->root->e);
+        fprintf(fdeqr, "%ld %i\n", ac->sz, ac->root->e);
     }
 
     ac_destroy(ac);
+    fclose(fitvdm);
+    fclose(fitvsz);
     fclose(fdvs);
     fclose(fdeq);
     fclose(fdeqr);
