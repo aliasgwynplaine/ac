@@ -4,6 +4,9 @@ OBJ = $(SRCFILES:.c=.o)
 INC_FLAGS = -g -D_DEBUG -Wall
 LDFLAGS = 
 
+plotting:
+	gnuplot plotcommands.sh
+
 happytests.exe: test_ac.o outils.o
 	$(CC) $(@:.exe=.c) $^ -o $@ $(INC_FLAGS) -g $(LDFLAGS)
 
