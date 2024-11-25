@@ -22,3 +22,24 @@ int q_pop(struct q_t *q) {
         return q->b[--q->h];
     else return -1;
 }
+
+double pseudo_unif() {
+    int fd = open("/dev/urandom", O_RDONLY); 
+
+    if (fd < 0) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    uint64_t r;
+
+    if (read(fd, &r, sizeof(r)) != sizeof(r)) {
+        perror("read");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
+
+    return (double)r / (double)UINT64_MAX;
+}

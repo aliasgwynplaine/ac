@@ -1,12 +1,13 @@
-#include "ac.h"
+#include "test_ac.h"
 
 
 struct ac_t * ac_init() {
     struct ac_t * ac = malloc(sizeof * ac);
     assert(ac != NULL);
-    ac->h    = 0;
-    ac->sz   = 0;
-    ac->root = NULL;
+    ac->root  = NULL;
+    ac->h_max = 0;
+    ac->h_moy = 0;
+    ac->sz    = 0;
 
     return ac;
 }
@@ -14,13 +15,11 @@ struct ac_t * ac_init() {
 struct ac_node_t * ac_node_init() {
     struct ac_node_t * n = malloc(sizeof * n);
     assert(n != NULL);
+    n->h    = 0;
+    n->e    = 0;
     n->f[0] = n->f[1] = NULL;
 
     return n;
-}
-
-void ac_node_rot(struct ac_node_t * n) {
-
 }
 
 
@@ -29,8 +28,8 @@ void ac_node_rot(struct ac_node_t * n) {
  * note: you may want to set a seed before
  * call this fux for testing purposes
  */
-int ac_alea_insert(struct ac_t * ac, char k) {
-    size_t p = rand();
+int ac_alea_insert(struct ac_t * ac, size_t k) {
+    double p = pseudo_unif();
     return ac_insert(ac, k, p);
 }
 
@@ -40,14 +39,16 @@ int ac_alea_insert(struct ac_t * ac, char k) {
  *          1: meme k
  *          0: reussi
  */
-int ac_insert(struct ac_t * ac, char k, size_t p) {
+int ac_insert(struct ac_t * ac, size_t k, double p) {
     assert(ac != NULL);
     //printf("insert %c %li\n", k, p);
 
-    int h = 0; /* stack height */
+    int h = 0; /* stack height | profondeur */
+    int h_ = 0;
     struct ac_node_t * s[1024]; /* stack. use thre->h */
     int                d[1024]; /* dirs to reconstrct the path */
     //s[0] = NULL;    
+    struct ac_node_t * lst = ac->root;
     struct ac_node_t * ptr = ac->root;
     
     while (ptr) {
@@ -55,12 +56,17 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
         d[h] = k < ptr->k;
         //printf("[%c:%ld]\n", ptr->k, ptr->p);
         //printf("d: %i\n", d[h]);
+        if (ptr->e != 0) {
+            lst = ptr;
+            h_  = h;
+        }
         ptr  = s[h]->f[d[h++]];
     }
 
     struct ac_node_t * n = ac_node_init();
     n->p = p;
     n->k = k;
+    n->h = h;
 
     if (h > 0) {
         s[h-1]->f[d[h-1]] = n;
@@ -68,6 +74,8 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
         ac->root = n;
 
     ac->sz++;
+    ac->h_max = ac->h_max < h ? h : ac->h_max;
+    //ac->h_moy = ac->h_moy + (h - ac->h_moy) / ac->sz; // nice trick from sr
 
     while (h > 0 && s[--h]->p > n->p) {
         if (h == 0) ac->root = n;
@@ -77,22 +85,39 @@ int ac_insert(struct ac_t * ac, char k, size_t p) {
             //printf("rotright\n");
             s[h]->f[1] = n->f[0];
             n->f[0]    = s[h];
+            n->e++;
+            s[h]->e--;
+            // todo: update profondeur of the right subtree
         } else {   /* n at right : rot left */
             //printf("rotleft\n");
             s[h]->f[0] = n->f[1];
             n->f[1]    = s[h];
+            n->e++;
+            s[h]->e--;
+            // todo: update profondeur of the left subtree
         }
+
+    }
+
+
+    while (lst && lst != n) {
+        if(d[h_] == 0) lst->e--;
+        else lst->e++;
+
+        lst = lst->f[d[h_++]];
     }
     
     return 0;
 }
+
+
 
 /**
  * returns
  *          0: sucess
  *          1: tree is empty
  */
-int ac_delete(struct ac_t * ac, char k) {
+int ac_delete(struct ac_t * ac, size_t k) {
     assert(ac != NULL);
     if (ac->sz == 0) return 1; /* tree is empty */
     //printf("delete %c\n", k);
@@ -125,6 +150,7 @@ int ac_delete(struct ac_t * ac, char k) {
         ptr->f[df]   = ptr->f[df]->f[1 - df];
         p->f[1 - df] = ptr;
         d = 1 - df;
+        ptr->h++;
     }
 
     p->f[d] = NULL;
@@ -138,7 +164,7 @@ int ac_delete(struct ac_t * ac, char k) {
  * returns the first entry with key k
  * NULL if not found
  */
-struct ac_node_t * ac_search(struct ac_t * ac, char k) {
+struct ac_node_t * ac_search(struct ac_t * ac, size_t k) {
     if (ac->sz == 0) return NULL;
     struct ac_node_t * n = ac->root;
 
@@ -172,7 +198,7 @@ void ac_print_(struct ac_node_t * n, struct q_t * q) {
  */
 
     if (n) {
-        printf("[%c:%ld]\n", n->k, n->p);
+        printf("[%ld:%0.2f|%ld|%i]\n", n->k, n->p, n->h, n->e);
         
         for (int i = 0; i < q->h; i++) 
             if (q->b[i]) printf(" \u2502");
