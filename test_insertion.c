@@ -50,6 +50,9 @@ int main(int argc, char * argv[]){
     }
 
     ac_destroy(ac);
+    fclose(fdvs);
+    fclose(fdeq);
+    fclose(fdeqr);
 
     return 0;
 }
