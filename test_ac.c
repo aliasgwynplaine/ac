@@ -98,7 +98,7 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
  */
 int ac_delete(struct ac_t * ac, size_t k) {
     assert(ac != NULL);
-    
+
     if (ac->sz == 0) return 1; /* tree is empty */
 
     struct ac_node_t * p; /* grand-parent|grand-fils */
@@ -203,7 +203,7 @@ void ac_print_(struct ac_node_t * n, struct q_t * q) {
  */
 
     if (n) {
-        printf("[%ld:%0.2f|%ld|%i]\n", n->k, n->p, n->d, n->e);
+        printf("[%ld:%0.2f|%ld|%li]\n", n->k, n->p, n->d, n->e);
         
         for (int i = 0; i < q->h; i++) 
             if (q->b[i]) printf(" \u2502");

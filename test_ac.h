@@ -47,8 +47,8 @@ struct ac_node_t {
     size_t  k;                  /* clé: integer, supposed all-non-equal*/
     double  p;                  /* priorité in [0, 1] */
     /* next members are used as metrics and for testing purposes */
-    size_t      d;            /* profondeur du noeud */
-    signed char e;            /* grade d'equilibre du noeud */
+    size_t  d;            /* profondeur du noeud */
+    int64_t e;            /* grade d'equilibre du noeud */
 };
 
 /**

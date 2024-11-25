@@ -10,14 +10,14 @@ int main(int argc, char * argv[]){
     }
     size_t nb = atol(argv[1]);
 
-    FILE * fitvdm = fopen("insertion_time_vs_depth_moy.data", "w");
+    FILE * fitvdm = fopen("bench_insertion_time_vs_depth_moy.data", "w");
     
     if (fitvdm < 0) {
         perror("open");
         return errno;
     }
 
-    FILE * fitvsz = fopen("insertion_time_vs_size.data", "w");
+    FILE * fitvsz = fopen("bench_insertion_time_vs_size.data", "w");
     
     if (fitvsz < 0) {
         perror("open");
@@ -25,6 +25,13 @@ int main(int argc, char * argv[]){
     }
 
     FILE * fdvs = fopen("bench_depth_vs_size.data", "w");
+    
+    if (fdvs < 0) {
+        perror("open");
+        return errno;
+    }
+
+    FILE * fdhvs = fopen("hauteur_max_vs_size.data", "w");
     
     if (fdvs < 0) {
         perror("open");
@@ -54,6 +61,7 @@ int main(int argc, char * argv[]){
         clock_t start = clock();
 
         ac_alea_insert(ac, i);
+        //ac_insert(ac, i, 1);
 
         clock_t fin = clock();
         double t = (double)(fin - start) / CLOCKS_PER_SEC;
@@ -63,9 +71,9 @@ int main(int argc, char * argv[]){
         fprintf(fitvdm, "%f %f\n", ac->d_moy, t);
         fprintf(fitvsz, "%ld %f\n", ac->sz, t);
         fprintf(fdvs, "%ld %f\n", ac->sz, ac->d_moy);
-        fprintf(fdvs, "%ld %f\n", ac->sz, ac->d_moy);
+        fprintf(fdhvs, "%ld %ld\n", ac->sz, ac->h_max);
         fprintf(fdeq, "%ld %f\n", ac->sz, ac->e_var);
-        fprintf(fdeqr, "%ld %i\n", ac->sz, ac->root->e);
+        fprintf(fdeqr, "%ld %li\n", ac->sz, ac->root->e);
     }
 
     ac_destroy(ac);
