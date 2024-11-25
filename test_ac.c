@@ -6,7 +6,8 @@ struct ac_t * ac_init() {
     assert(ac != NULL);
     ac->root  = NULL;
     ac->h_max = 0;
-    ac->h_moy = 0;
+    ac->d_moy = 0;
+    ac->e_var = 0;
     ac->sz    = 0;
 
     return ac;
@@ -15,7 +16,6 @@ struct ac_t * ac_init() {
 struct ac_node_t * ac_node_init() {
     struct ac_node_t * n = malloc(sizeof * n);
     assert(n != NULL);
-    n->h    = 0;
     n->e    = 0;
     n->f[0] = n->f[1] = NULL;
 
@@ -48,7 +48,6 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
     struct ac_node_t * s[1024]; /* stack. use thre->h */
     int                d[1024]; /* dirs to reconstrct the path */
     //s[0] = NULL;    
-    struct ac_node_t * lst = ac->root;
     struct ac_node_t * ptr = ac->root;
     
     while (ptr) {
@@ -56,17 +55,12 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
         d[h] = k < ptr->k;
         //printf("[%c:%ld]\n", ptr->k, ptr->p);
         //printf("d: %i\n", d[h]);
-        if (ptr->e != 0) {
-            lst = ptr;
-            h_  = h;
-        }
         ptr  = s[h]->f[d[h++]];
     }
 
     struct ac_node_t * n = ac_node_init();
     n->p = p;
     n->k = k;
-    n->h = h;
 
     if (h > 0) {
         s[h-1]->f[d[h-1]] = n;
@@ -85,26 +79,12 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
             //printf("rotright\n");
             s[h]->f[1] = n->f[0];
             n->f[0]    = s[h];
-            n->e++;
-            s[h]->e--;
-            // todo: update profondeur of the right subtree
         } else {   /* n at right : rot left */
             //printf("rotleft\n");
             s[h]->f[0] = n->f[1];
             n->f[1]    = s[h];
-            n->e++;
-            s[h]->e--;
-            // todo: update profondeur of the left subtree
         }
 
-    }
-
-
-    while (lst && lst != n) {
-        if(d[h_] == 0) lst->e--;
-        else lst->e++;
-
-        lst = lst->f[d[h_++]];
     }
     
     return 0;
@@ -150,7 +130,6 @@ int ac_delete(struct ac_t * ac, size_t k) {
         ptr->f[df]   = ptr->f[df]->f[1 - df];
         p->f[1 - df] = ptr;
         d = 1 - df;
-        ptr->h++;
     }
 
     p->f[d] = NULL;
@@ -190,6 +169,34 @@ void ac_destroy(struct ac_t * ac) {
     free(ac);
 }
 
+
+int ac_update_(struct ac_t * ac, struct ac_node_t * n, size_t d) {
+    if (n == NULL) return 0;
+    n->d = d;
+    int gh = ac_update_(ac, n->f[1], d + 1);
+    int dh = ac_update_(ac, n->f[0], d + 1);
+    n->e   = gh - dh;
+    ac->e_var += n->e * n->e;
+    ac->d_moy += d;
+    ac->h_max  = n->e < 0 ? dh : gh;
+
+    return n->e < 0 ? 1 + dh : 1 + gh;
+}
+
+
+void ac_update(struct ac_t * ac) {
+    ac->d_moy += ac_update_(ac, ac->root, 0);
+    ac->d_moy /= (double) ac->sz;
+    ac->e_var /= (double) ac->sz;
+}
+
+void ac_print_metrics(struct ac_t * ac) {
+    printf("h_max: %ld\n", ac->h_max);
+    printf("d_moy: %f\n", ac->d_moy);
+    printf("e_var: %f\n", ac->e_var);
+    printf("sz:%ld\n", ac->sz);
+}
+
 void ac_print_(struct ac_node_t * n, struct q_t * q) {
 /**
  * shamelessly plundered from 
@@ -198,7 +205,7 @@ void ac_print_(struct ac_node_t * n, struct q_t * q) {
  */
 
     if (n) {
-        printf("[%ld:%0.2f|%ld|%i]\n", n->k, n->p, n->h, n->e);
+        printf("[%ld:%0.2f|%ld|%i]\n", n->k, n->p, n->d, n->e);
         
         for (int i = 0; i < q->h; i++) 
             if (q->b[i]) printf(" \u2502");

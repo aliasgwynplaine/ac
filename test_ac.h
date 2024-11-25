@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "outils.h"
 
 /* lol */
@@ -46,7 +47,7 @@ struct ac_node_t {
     size_t  k;                  /* clé: integer, supposed all-non-equal*/
     double  p;                  /* priorité in [0, 1] */
     /* next members are used as metrics and for testing purposes */
-    size_t        h;            /* profondeur du noeud */
+    size_t      d;            /* profondeur du noeud */
     signed char e;            /* grade d'equilibre du noeud */
 };
 
@@ -64,18 +65,22 @@ struct ac_node_t {
 struct ac_t {
     struct ac_node_t * root; /* racine */
     size_t  h_max;           /* profondeur of the noeud le plus profond */
-    size_t  h_moy;           /* profondeur moyenne  */
+    double  d_moy;           /* profondeur moyenne  */
+    double  e_var;           /* "variance" de l'équilibre */
     size_t     sz;           /* size: nombre de noeuds */
 };
 
 struct ac_t * ac_init();
 struct ac_node_t * ac_node_init();
+int ac_alea_insert(struct ac_t * ac, size_t k);
 int ac_insert(struct ac_t * ac, size_t k, double p);
 int ac_delete(struct ac_t * ac, size_t k);
 struct ac_node_t * ac_search(struct ac_t * ac, size_t k);
 void ac_node_destroy(struct ac_node_t * node);
 void ac_destroy(struct ac_t * ac);
 
+void ac_update(struct ac_t * ac);
+void ac_print_metrics(struct ac_t * ac);
 void ac_print(struct ac_node_t * n);
 int  ac_check_pri(struct ac_node_t * acroot);
 int  ac_empty(struct ac_t * ac);

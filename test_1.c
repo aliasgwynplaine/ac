@@ -76,7 +76,9 @@ int main(int argc, char * argv[]){
     ac_insert(ac, 'I', 10);
     printf("------------------\n");
     printf("%d\n", ac_check_pri(ac->root));
+    ac_update(ac);
     ac_print(ac->root);
+    ac_print_metrics(ac);
     ac_destroy(ac);
 
 
