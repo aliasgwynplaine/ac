@@ -65,3 +65,14 @@ uint64_t pseudo_rand_u64() {
     return r;
 }
 
+
+void shuffle(uint64_t * a, uint64_t n) {
+    uint64_t i;
+
+    for (i = 0; i < n - 1; i++) {
+        uint64_t j = i + pseudo_rand_u64() / (UINT64_MAX / (n - i) + 1);
+        uint64_t t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+}

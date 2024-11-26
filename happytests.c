@@ -84,11 +84,19 @@ int main(int argc, char * argv[]){
     struct ac_t * ac;
     ac = ac_init();
 
+    uint64_t * boite = malloc(nb * sizeof(*boite));
+
+    for (int i = 0; i < nb; i++) {
+        boite[i] = i;
+    }
+
+    shuffle(boite, nb);
+
 
     for (int i = 0; i < nb; i++) {
         clock_t start = clock();
 
-        ac_alea_insert(ac, i);
+        ac_alea_insert(ac, boite[i]);
         //ac_insert(ac, i, 1);
 
         clock_t fin = clock();
@@ -98,11 +106,11 @@ int main(int argc, char * argv[]){
 
         ac_update(ac);
         //ac_print(ac->root);
-        fprintf(fitvdm, "%f %f\n", ac->d_moy, t);
-        fprintf(fitvsz, "%ld %f\n", ac->sz, t);
+        fprintf(fitvdm, "%e %e\n", ac->d_moy, t);
+        fprintf(fitvsz, "%ld %e\n", ac->sz, t);
         //fprintf(fistvsz, "%ld %f\n", ac->sz, t);
         //fprintf(fistvdm, "%f %f\n", ac->d_moy, t);
-        fprintf(fdvs, "%ld %f\n", ac->sz, ac->d_moy);
+        fprintf(fdvs, "%ld %e\n", ac->sz, ac->d_moy);
         fprintf(fdhvs, "%ld %ld\n", ac->sz, ac->h_max);
         fprintf(fdeq, "%ld %f\n", ac->sz, ac->e_var);
         fprintf(fdeqr, "%ld %li\n", ac->sz, ac->root->e);
@@ -114,6 +122,7 @@ int main(int argc, char * argv[]){
     fclose(fdvs);
     fclose(fdeq);
     fclose(fdeqr);
+    free(boite);
 
     return 0;
 }

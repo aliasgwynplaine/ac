@@ -29,6 +29,7 @@ int  q_pop(struct q_t *q);
 
 double pseudo_unif();
 uint64_t pseudo_rand_u64();
+void shuffle(uint64_t * a, uint64_t n);
 
 
 #endif
