@@ -28,7 +28,7 @@ struct ac_node_t * ac_node_init() {
  * note: you may want to set a seed before
  * call this fux for testing purposes
  */
-int ac_alea_insert(struct ac_t * ac, size_t k) {
+int ac_alea_insert(struct ac_t * ac, uint64_t k) {
     double p = pseudo_unif();
     return ac_insert(ac, k, p);
 }
@@ -39,7 +39,7 @@ int ac_alea_insert(struct ac_t * ac, size_t k) {
  *          1: meme k
  *          0: reussi
  */
-int ac_insert(struct ac_t * ac, size_t k, double p) {
+int ac_insert(struct ac_t * ac, uint64_t k, double p) {
     assert(ac != NULL);
     //printf("insert %c %li\n", k, p);
 
@@ -96,7 +96,7 @@ int ac_insert(struct ac_t * ac, size_t k, double p) {
  *          0: sucess
  *          1: tree is empty
  */
-int ac_delete(struct ac_t * ac, size_t k) {
+int ac_delete(struct ac_t * ac, uint64_t k) {
     assert(ac != NULL);
 
     if (ac->sz == 0) return 1; /* tree is empty */
@@ -141,7 +141,7 @@ int ac_delete(struct ac_t * ac, size_t k) {
  * returns the first entry with key k
  * NULL if not found
  */
-struct ac_node_t * ac_search(struct ac_t * ac, size_t k) {
+struct ac_node_t * ac_search(struct ac_t * ac, uint64_t k) {
     if (ac->sz == 0) return NULL;
     struct ac_node_t * n = ac->root;
 
@@ -168,7 +168,7 @@ void ac_destroy(struct ac_t * ac) {
 }
 
 
-int ac_update_(struct ac_t * ac, struct ac_node_t * n, size_t d) {
+int ac_update_(struct ac_t * ac, struct ac_node_t * n, uint64_t d) {
     if (n == NULL) return 0;
     n->d = d;
     int gh = ac_update_(ac, n->f[1], d + 1);

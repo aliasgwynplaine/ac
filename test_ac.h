@@ -43,12 +43,12 @@
  * for that 'special' case.
  */
 struct ac_node_t {
-    struct ac_node_t * f[2];    /* 0 : droite, 1: gauche */
-    size_t  k;                  /* clé: integer, supposed all-non-equal*/
-    double  p;                  /* priorité in [0, 1] */
+    struct ac_node_t * f[2]; /* 0 : droite, 1: gauche */
+    uint64_t  k;             /* clé: integer, supposed all-non-equal*/
+    double    p;             /* priorité in [0, 1] */
     /* next members are used as metrics and for testing purposes */
-    size_t  d;            /* profondeur du noeud */
-    int64_t e;            /* grade d'equilibre du noeud */
+    uint64_t  d;             /* profondeur du noeud */
+    int64_t   e;             /* facteur d'equilibre du noeud */
 };
 
 /**
@@ -64,18 +64,18 @@ struct ac_node_t {
  */
 struct ac_t {
     struct ac_node_t * root; /* racine */
-    size_t  h_max;           /* profondeur of the noeud le plus profond */
-    double  d_moy;           /* profondeur moyenne  */
-    double  e_var;           /* "variance" de l'équilibre */
-    size_t     sz;           /* size: nombre de noeuds */
+    uint64_t h_max;          /* profondeur of the noeud le plus profond */
+    double   d_moy;          /* profondeur moyenne  */
+    double   e_var;          /* "variance" de l'équilibre */
+    uint64_t    sz;          /* size: nombre de noeuds */
 };
 
 struct ac_t * ac_init();
 struct ac_node_t * ac_node_init();
-int ac_alea_insert(struct ac_t * ac, size_t k);
-int ac_insert(struct ac_t * ac, size_t k, double p);
-int ac_delete(struct ac_t * ac, size_t k);
-struct ac_node_t * ac_search(struct ac_t * ac, size_t k);
+int ac_alea_insert(struct ac_t * ac, uint64_t k);
+int ac_insert(struct ac_t * ac, uint64_t k, double p);
+int ac_delete(struct ac_t * ac, uint64_t k);
+struct ac_node_t * ac_search(struct ac_t * ac, uint64_t k);
 void ac_node_destroy(struct ac_node_t * node);
 void ac_destroy(struct ac_t * ac);
 

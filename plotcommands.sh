@@ -1,6 +1,7 @@
 #!/usr/bin/gnuplot
 
-set terminal pngcairo size 1920,1080 enhanced font "Helvetica,20"
+set key left top
+set terminal pngcairo size 1500,927 enhanced font "Helvetica,20"
 set title "Profondeur moyenne vs nombre de noeuds"
 set xlabel 'nombre de noeuds'
 set ylabel 'profondeur moyenne'

@@ -12,9 +12,10 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-typedef uint64_t u64;
-typedef uint32_t u32;
-typedef u_char   uch;
+typedef uint64_t    u64;
+typedef uint32_t    u32;
+typedef u_char      uch;
+typedef signed char sch;
 
 struct q_t {
     int *  b; /* bits */
@@ -27,6 +28,7 @@ void q_push(struct q_t *q, int bit);
 int  q_pop(struct q_t *q);
 
 double pseudo_unif();
+uint64_t pseudo_rand_u64();
 
 
 #endif

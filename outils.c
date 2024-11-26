@@ -43,3 +43,25 @@ double pseudo_unif() {
 
     return (double)r / (double)UINT64_MAX;
 }
+
+uint64_t pseudo_rand_u64() {
+    int fd = open("/dev/urandom", O_RDONLY); 
+
+    if (fd < 0) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+
+    uint64_t r;
+
+    if (read(fd, &r, sizeof(r)) != sizeof(r)) {
+        perror("read");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
+
+    return r;
+}
+
