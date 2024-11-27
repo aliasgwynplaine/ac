@@ -23,8 +23,10 @@
  * since a pointer to a struct 
  * is a pointer to the first 
  * member of the struct. So, in 
- * this way, we can cast a ac_node_t
- * as a ac_node_t *. This is important
+ * this way, we can cast a ac_node_t**
+ * as a ac_node_t * and access the 
+ * pointed struct by calling the first
+ * member of the struct. This is important
  * cuz node deletion relies in this 
  * behavior in order to delete a root
  * without adding additional variables

@@ -103,14 +103,17 @@ int ac_delete(struct ac_t * ac, char k) {
     int               df; /* nxt dir à prendre */
 
     struct ac_node_t * ptr = (struct ac_node_t *)&ac->root; // LOL! xd
-    
-    while (ptr && k != ptr->k) {
-        d = k < ptr->k;
-        //printf("[%c:%ld]\n", ptr->k, ptr->p);
-        //printf("d: %i\n", d[h]);
+    int c = -1;
+
+    do {
+        d   = c > 0;
         p   = ptr;
         ptr = ptr->f[d];
-    }
+        
+        if (ptr == NULL) return 0;
+        
+        c   = k < ptr->k;
+    } while (ptr && k != ptr->k);
 
     if (ptr->f[0] || ptr->f[1]) df = 0;
 
@@ -152,9 +155,11 @@ struct ac_node_t * ac_search(struct ac_t * ac, char k) {
 
 
 void ac_node_destroy(struct ac_node_t * node) {
-    if (node->f[1]) ac_node_destroy(node->f[1]);
-    if (node->f[0]) ac_node_destroy(node->f[0]);
-    free(node);
+    if (node) {
+        if (node->f[1]) ac_node_destroy(node->f[1]);
+        if (node->f[0]) ac_node_destroy(node->f[0]);
+        free(node);
+    }
 }
 
 
@@ -199,7 +204,7 @@ void ac_print_(struct ac_node_t * n, struct q_t * q) {
 
 
 void ac_print(struct ac_node_t * root) {
-    assert(root != NULL);
+    if (!root) printf("\u259e");
     struct q_t * q = q_init(64);
     ac_print_(root, q);
     q_destroy(q);
